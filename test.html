@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App</title>
+    <style>
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      .chat-header {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        background-color: #f2f2f2;
+        color: #333;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 2px;
+        text-align: center;
+      }
+      .chat-header img {
+        height: 40px;
+      }
+      .chat-messages {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        padding: 10px;
+      }
+      .chat-message {
+        align-self: flex-start;
+        background-color: #e6e6e6;
+        border-radius: 5px;
+        color: #333;
+        margin-bottom: 10px;
+        max-width: 70%;
+        padding: 10px;
+      }
+      .chat-message.me {
+        align-self: flex-end;
+        background-color: #007aff;
+        color: #fff;
+      }
+      .chat-input {
+        background-color: #f2f2f2;
+        display: flex;
+        padding: 10px;
+      }
+      .chat-input input[type="text"] {
+        border-radius: 5px;
+        border: none;
+        flex: 1;
+        padding: 10px;
+      }
+      .chat-input button {
+        background-color: #007aff;
+        border-radius: 5px;
+        border: none;
+        color: #fff;
+        margin-left: 10px;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="text">智慧学工助手</div>
+        <img src="../public/download.png" />
+      </div>
+      <div class="chat-messages" id="chatMessages">
+      </div>
+      <div class="chat-input">
+        <input type="text" id="newMessage" placeholder="请输入" />
+        <button id="sendMessage">发送</button>
+      </div>
+    </div>
+    <script>
+      const title = '智慧学工助手';
+      const messages = [
+        {
+          content: 'Hi，我是你的智能助手，我可以帮你完成一些事，试着对我说“入学材料”',
+          from: 'other'
+        }
+      ];
+      let newMessage = '';
+      const chatMessages = document.getElementById('chatMessages');
+
+      const sendMessage = () => {
+        newMessage = document.getElementById('newMessage').value;
+        if (!newMessage) {
+          return;
+        }
+        messages.push({ content: newMessage, from: 'me' });
+        const messageWrapper = document.createElement('div');
+          messageWrapper.classList.add('chat-message');
+          messageWrapper.classList.add('me');
+          messageWrapper.innerText = newMessage;
+          chatMessages.appendChild(messageWrapper);
+        let reply = getRandomReply(newMessage);
+        setTimeout(() => {
+          messages.push({ content: reply, from: 'other' });
+          // 在回复消息后，将滚动条滚动到底部
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          // 添加新的聊天记录
+          const messageWrapper = document.createElement('div');
+          messageWrapper.classList.add('chat-message');
+          messageWrapper.classList.add('other');
+          messageWrapper.innerText = reply;
+          chatMessages.appendChild(messageWrapper);
+        }, 1000);
+        // 清空消息输入框
+        document.getElementById('newMessage').value = '';
+      };
+
+      const replies = {
+        入学材料: [
+          '请问您是准备报考哪个专业呢？不同专业的入学材料要求可能会有所不同。',
+          '您需要提供一些材料，例如身份证、学生证原件和复印件、毕业证或在读证明原件和复印件、学位证书、成绩单原件和复印件等，请您认真核对所需材料清单。'
+        ],
+        我要准备哪些入学材料: [
+          '入学材料包括身份证、学生证原件和复印件、毕业证或在读证明原件和复印件、学位证书、成绩单原件和复印件等，请您认真核对所需材料清单。',
+          '请问您是准备报考哪个专业呢？不同专业的入学材料要求可能会有所不同。'
+        ],
+        default: [
+          '对不起，我不太明白您的意思，请您再说一遍。',
+          '我不太理解您的问题，您可以换一种说法或者问我其他的问题。'
+        ]
+      };
+
+      const getRandomReply = (message) => {
+        const messageKey = Object.keys(replies).find(key => message.includes(key)) || 'default';
+        const messageReplies = replies[messageKey];
+        const randomIndex = Math.floor(Math.random() * messageReplies.length);
+        return messageReplies[randomIndex];
+      };
+
+      messages.forEach((message) => {
+        const messageWrapper = document.createElement('div');
+        messageWrapper.classList.add('chat-message');
+        messageWrapper.classList.add(message.from);
+        messageWrapper.innerText = message.content;
+        chatMessages.appendChild(messageWrapper);
+      });
+
+      document.getElementById('sendMessage').addEventListener('click', sendMessage);
+      document.getElementById('newMessage').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    </script>
+  </body>
+</html>
